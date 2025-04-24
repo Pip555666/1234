@@ -3,17 +3,14 @@ import re
 import emoji
 from pathlib import Path
 
-# HDFS 관련 함수 임포트 (infra 폴더가 파이썬 경로에 있어야 함)
 try:
-    # HDFS 클라이언트와 저장 함수만 가져옴
     from infra.hdfs import get_client, save_csv_hdfs
     HDFS_AVAILABLE = True
 except ImportError:
     print("[경고] infra.hdfs 모듈을 찾을 수 없습니다. HDFS 저장이 비활성화됩니다.")
     HDFS_AVAILABLE = False
 
-# --- HDFS 저장 경로 설정 (표준 경로 사용) ---
-# 운영 파이프라인과 동일한 표준 경로를 사용합니다.
+# --- HDFS 저장 경로 설정 ---
 HDFS_OUTPUT_BASE_DIR = "/project-root/data/_1_preprocessed"
 # ---------------------------------------------
 
@@ -41,13 +38,12 @@ def preprocess_and_save(stock_name: str, base_dir: Path, hdfs_client=None):
     raw_file = base_dir / f"../train_data/_0_raw/{stock_name}_comments.csv"
 
     # --- 출력 파일 경로 생성 ---
-    # HDFS 경로 (표준 경로 사용)
+    # HDFS 경로
     output_filename_hdfs = f"{stock_name}_preprocessed.csv" # HDFS에 저장될 파일명
     output_path_hdfs = f"{HDFS_OUTPUT_BASE_DIR}/{output_filename_hdfs}"
 
     # 로컬 경로 (HDFS 사용 불가 시 대체)
-    # 참고: HDFS 저장 실패 시 여기에 저장되지만, _4_1_rel_train.py는 HDFS에서 읽으므로 주의
-    output_path_local = base_dir / f"../train_data/_1_preprocessed/{stock_name}_preprocessed.csv"
+    # output_path_local = base_dir / f"../train_data/_1_preprocessed/{stock_name}_preprocessed.csv"
     # --------------------------
 
     if not raw_file.exists():
